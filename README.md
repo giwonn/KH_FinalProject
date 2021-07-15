@@ -1,6 +1,4 @@
 # KH_FinalProject
- 
-# Final-Front-end
 
 > _함께 공부하고 싶을 땐 Swith! 함께 공부할 수 있는 사람들을 찾고자 할 때 사용할 수 있는 플랫폼_    
 
