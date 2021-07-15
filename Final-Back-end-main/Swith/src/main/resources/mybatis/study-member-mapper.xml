@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swith.studymembermapper">
+
+	<resultMap type="StudyMemberDto" id="studyMemberMap">
+		<result property="study_group_member_id" column="STUDY_GROUP_MEMBER_ID" />
+		<result property="study_group_id" column="STUDY_GROUP_ID" />
+		<result property="email" column="MEMBER_EMAIL" />
+		<result property="role" column="ROLE" />
+		<result property="member_nickname" column="MEMBER_NICKNAME" />
+		<result property="member_phonenumber" column="MEMBER_PHONENUMBER" />
+		<result property="member_loc" column="MEMBER_LOC" />
+	</resultMap>
+
+	<select id="selectOne" parameterType="String" resultType="string">
+		SELECT ROLE
+		FROM STUDY_GROUP_MEMBER
+		WHERE MEMBER_EMAIL = #{email} AND STUDY_GROUP_ID = #{studyId}
+	</select>
+	
+	<select id="getList" parameterType="int" resultMap="studyMemberMap">
+		SELECT A.MEMBER_NICKNAME, A.MEMBER_LOC, A.MEMBER_PHONENUMBER, B.ROLE
+		FROM MEMBER A 
+		FULL OUTER JOIN STUDY_GROUP_MEMBER B
+		ON A.MEMBER_EMAIL = B.MEMBER_EMAIL
+		WHERE STUDY_GROUP_ID = #{studyId}
+		AND ROLE != 'waiting'
+	</select>
+	
+	<insert id="studySignIn">
+		INSERT INTO STUDY_GROUP_MEMBER
+		VALUES(STUDY_GROUP_MEMBER_SEQ.NEXTVAL, #{studyId}, #{email}, 'waiting')
+	</insert>
+	
+	<delete id="studySignOut">
+		DELETE FROM STUDY_GROUP_MEMBER
+		WHERE MEMBER_EMAIL = #{email} AND STUDY_GROUP_ID = #{studyId} AND ROLE = 'waiting'
+	</delete>
+	
+	<select id="joingetList" parameterType="int" resultMap="studyMemberMap">
+		SELECT A.MEMBER_EMAIL, A.MEMBER_NICKNAME, A.MEMBER_LOC, A.MEMBER_PHONENUMBER, B.ROLE
+		FROM MEMBER A 
+		FULL OUTER JOIN STUDY_GROUP_MEMBER B
+		ON A.MEMBER_EMAIL = B.MEMBER_EMAIL
+		WHERE STUDY_GROUP_ID = #{studyId} AND ROLE = 'waiting'
+	</select>
+	
+	<update id="studyJoin">
+		UPDATE STUDY_GROUP_MEMBER
+		SET ROLE='user'
+		WHERE MEMBER_EMAIL = #{email} AND STUDY_GROUP_ID = #{studyId} AND ROLE = 'waiting'
+	</update>
+	
+
+	
+
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+
+	<typeAliases>
+		<typeAlias type="com.kh.swith.test.dto.TestDto" alias="testDto" />
+		<typeAlias type="com.kh.swith.dto.CalendarDto" alias="CalendarDto" />
+		<typeAlias type="com.kh.swith.dto.StudyDto" alias="StudyDto" />
+		<typeAlias type="com.kh.swith.dto.PaymentDto" alias="PaymentDto" />
+		<typeAlias type="com.kh.swith.dto.MemberDto" alias="MemberDto" />
+		<typeAlias type="com.kh.swith.dto.TodoMyDto" alias="TodoMyDto" />
+		<typeAlias type="com.kh.swith.dto.TodoStudyDto" alias="TodoStudyDto" />
+		<typeAlias type="com.kh.swith.dto.FeedDto" alias="FeedDto" />
+		<typeAlias type="com.kh.swith.dto.StudyMemberDto" alias="StudyMemberDto"/>
+	</typeAliases>
+
+	<mappers>
+		<mapper resource="/mybatis/test-mapper.xml" />
+		<mapper resource="/mybatis/calendar-mapper.xml" />
+		<mapper resource="/mybatis/study-mapper.xml" />
+		<mapper resource="/mybatis/payment-mapper.xml" />
+		<mapper resource="/mybatis/member-mapper.xml" />
+		<mapper resource="/mybatis/todolist-my-mapper.xml" />
+		<mapper resource="/mybatis/todolist-study-mapper.xml" />
+		<mapper resource="/mybatis/feed-mapper.xml" />
+		<mapper resource="/mybatis/study-member-mapper.xml" />
+		<mapper resource="/mybatis/study-introduce-mapper.xml" />
+	</mappers>
+
+</configuration>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+
+<mapper namespace="swith.todolist-study-mapper">
+
+	<resultMap type="TodoStudyDto" id="todoStudyMap">
+		<result property="todolistid" column="TODO_MY_ID" />
+		<result property="title" column="TITLE" />
+		<result property="content" column="CONTENT" />
+		<result property="isdone" column="IS_DONE" />
+		<result property="studygroupid" column="STUDY_GROUP_ID" />
+		<result property="memberemail" column="MEMBER_EMAIL" />
+		<result property="createdat" column="CREATEDAT" />
+		<result property="doneat" column="DONEAT" />
+	</resultMap>
+
+
+
+</mapper>
+

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="swith.studyintroducemapper">
+
+	<resultMap type="StudyDto" id="studyMap">
+		<result property="studygroupid" column="STUDY_GROUP_ID" />
+		<result property="studygroupname" column="STUDY_GROUP_NAME" />
+		<result property="studygroupdesc" column="STUDY_GROUP_DESC" />
+		<result property="studygroupoffline" column="STUDY_GROUP_OFFLINE" />
+		<result property="studygrouparea" column="STUDY_GROUP_AREA" />
+		<result property="studygroupadmin" column="STUDY_GROUP_ADMIN" />
+		<result property="studygrouplng" column="STUDY_GROUP_LNG" />
+		<result property="studygrouplat" column="STUDY_GROUP_LAT" />
+		<result property="studygroupaddr" column="STUDY_GROUP_ADDR" />
+		<result property="studygrouppw" column="STUDY_GROUP_PW" />
+		<result property="studyusercnt" column="STUDY_USERCNT" />
+		<result property="study_member_count" column="STUDY_MEMBER_COUNT" />
+	</resultMap>
+
+
+	<select id="studyIntroduceSelectOne" parameterType="int"
+		resultMap="studyMap">
+		SELECT
+		SG.STUDY_GROUP_ID,
+		STUDY_GROUP_NAME,
+		STUDY_GROUP_DESC,
+		STUDY_GROUP_OFFLINE,
+		STUDY_GROUP_LNG,
+		STUDY_GROUP_LAT,
+		STUDY_GROUP_ADDR,
+		STUDY_GROUP_ADMIN,
+		(SELECT COUNT(*) AS STUDY_MEMBER_COUNT
+		FROM STUDY_GROUP_MEMBER
+		WHERE STUDY_GROUP_ID = #{study_group_id}
+		AND ROLE != 'waiting') AS STUDY_MEMBER_COUNT
+		FROM STUDY_GROUP_MEMBER SGM, STUDY_GROUP SG
+		WHERE SG.STUDY_GROUP_ID = #{study_group_id}
+		AND SG.STUDY_GROUP_ID = SGM.STUDY_GROUP_ID
+	</select>
+</mapper>
+

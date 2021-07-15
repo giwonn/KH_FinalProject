@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+
+<mapper namespace="swith.studymapper">
+
+	<resultMap type="StudyDto" id="studyMap">
+		<result property="studygroupid" column="STUDY_GROUP_ID" />
+		<result property="studygroupname" column="STUDY_GROUP_NAME" />
+		<result property="studygroupdesc" column="STUDY_GROUP_DESC" />
+		<result property="studygroupoffline" column="STUDY_GROUP_OFFLINE" />
+		<result property="studygrouparea" column="STUDY_GROUP_AREA" />
+		<result property="studygroupadmin" column="STUDY_GROUP_ADMIN" />
+		<result property="studygrouplng" column="STUDY_GROUP_LNG" />
+		<result property="studygrouplat" column="STUDY_GROUP_LAT" />
+		<result property="studygroupaddr" column="STUDY_GROUP_ADDR" />
+		<result property="studygrouppw" column="STUDY_GROUP_PW" />
+		<result property="studyusercnt" column="STUDY_USERCNT" />
+	</resultMap>
+
+	<insert id="insert" parameterType="StudyDto" useGeneratedKeys="false">
+		<selectKey keyProperty="studygroupid" resultType="integer" order="BEFORE">
+			 SELECT STUDY_GROUP_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO STUDY_GROUP (
+			STUDY_GROUP_ID, 
+			STUDY_GROUP_NAME, 
+			STUDY_GROUP_DESC, 
+			STUDY_GROUP_OFFLINE,
+			STUDY_GROUP_AREA,
+			STUDY_GROUP_ADMIN
+			<if test='studygrouplng != null and studygrouplng != "" and studygroupaddr != null and studygroupaddr != "" and studygrouplat != null and studygrouplat != "" '>
+				,STUDY_GROUP_LNG, STUDY_GROUP_LAT, STUDY_GROUP_ADDR
+			</if>
+			<if test='studygrouppw != null and studygrouppw != ""'>			
+				,STUDY_GROUP_PW
+			</if>
+		)
+		VALUES (
+			#{studygroupid, jdbcType=INTEGER},
+			#{studygroupname}, 
+			#{studygroupdesc}, 
+			#{studygroupoffline},
+			#{studygrouparea},
+			#{studygroupadmin}
+			<if test='studygrouplng != null and studygrouplng != "" and studygroupaddr != null and studygroupaddr != "" and studygrouplat != null and studygrouplat != "" '>
+				,#{studygrouplng}
+				,#{studygrouplat}
+				,#{studygroupaddr}
+			</if>
+			<if test='studygrouppw != null and studygrouppw != ""'>			
+				,#{studygrouppw}
+			</if>
+		)
+	</insert>
+	
+	<select id="searchList" resultMap="studyMap" parameterType="String">
+		SELECT
+			STUDY_GROUP_ID, 
+			STUDY_GROUP_NAME, 
+			STUDY_GROUP_DESC, 
+			STUDY_GROUP_OFFLINE, 
+			STUDY_GROUP_LNG, 
+			STUDY_GROUP_LAT,
+			STUDY_GROUP_ADDR,
+			STUDY_GROUP_PW
+		FROM STUDY_GROUP
+		WHERE 1=1
+		AND STUDY_GROUP_OFFLINE = 'N'
+		AND (STUDY_GROUP_NAME LIKE '%'||#{searched}||'%')
+		ORDER BY STUDY_GROUP_ID DESC
+	</select>
+	
+	<select id="selectList" resultMap="studyMap" parameterType="hashMap">
+		<![CDATA[
+		SELECT 
+			STUDY_GROUP_ID, 
+			STUDY_GROUP_NAME, 
+			STUDY_GROUP_DESC, 
+			STUDY_GROUP_OFFLINE, 
+			STUDY_GROUP_AREA,
+			STUDY_GROUP_LNG, 
+			STUDY_GROUP_LAT,
+			STUDY_GROUP_ADDR,
+			STUDY_GROUP_PW
+		FROM STUDY_GROUP
+		WHERE 1=1
+		AND (STUDY_GROUP_LAT BETWEEN #{lat}-(#{dist}*0.00001) AND #{lat}+(#{dist}*0.00001))
+		AND (STUDY_GROUP_LNG BETWEEN #{lng}-(#{dist}*0.00001) AND #{lng}+(#{dist}*0.00001))
+		AND (SQRT(POWER(#{lat}-STUDY_GROUP_LAT, 2) + POWER(#{lng}-STUDY_GROUP_LNG, 2)) / 2 <= (#{dist}*0.000005))
+		ORDER BY STUDY_GROUP_ID DESC
+		]]>
+	</select>
+	
+	<!-- 반경, 좌표 불러오는 다른 sql (임시) -->
+	<!-- <select id="selectList" resultMap="studyMap" parameterType="hashMap">
+		<![CDATA[
+		SELECT *,
+			(6371*ACOS(COS(ACOS(-1) / 180 * #{lat})*COS(ACOS(-1) / 180 * STUDY_GROUP_LAT)*COS(ACOS(-1) / 180 * STUDY_GROUP_LNG -ACOS(-1) / 180 * #{lng})+SIN(ACOS(-1) / 180 * #{lat})*SIN(ACOS(-1) / 180 * STUDY_GROUP_LAT))) AS distance
+		FROM STUDY_GROUP 
+		WHERE STUDY_GROUP_LAT IS NOT NULL AND STUDY_GROUP_LNG IS NOT NULL 
+		HAVING distance <= (#{dist} * 0.001) 
+		ORDER BY distance 
+		]]>
+	</select> -->
+	
+	
+
+	<select id="selectListByUserEmail" resultMap="studyMap" parameterType="String">
+		SELECT 
+			STUDY_GROUP_ID, 
+			STUDY_GROUP_NAME, 
+			STUDY_GROUP_DESC, 
+			STUDY_GROUP_OFFLINE, 
+			STUDY_GROUP_AREA,
+			STUDY_GROUP_LNG, 
+			STUDY_GROUP_LAT,
+			STUDY_GROUP_ADDR,
+			STUDY_GROUP_ADMIN
+		FROM STUDY_GROUP
+		WHERE STUDY_GROUP_ID IN (
+			SELECT 
+				STUDY_GROUP_ID
+			FROM STUDY_GROUP_MEMBER
+			WHERE MEMBER_EMAIL = #{memberemail} AND ROLE != 'waiting' 
+		)
+	</select>
+
+	<insert id="insertStudyMember" parameterType="Map">
+		INSERT INTO STUDY_GROUP_MEMBER(
+			STUDY_GROUP_MEMBER_ID,
+			STUDY_GROUP_ID,
+			MEMBER_EMAIL,
+			ROLE
+		)VALUES(
+			STUDY_GROUP_MEMBER_SEQ.NEXTVAL,
+			#{studygroupid},
+			#{memberemail},
+			#{role}
+		)
+	</insert>
+	
+	<select id="selectStudyById" parameterType="int" resultMap="studyMap">
+		SELECT 
+			STUDY_GROUP_ID, 
+			STUDY_GROUP_NAME, 
+			STUDY_GROUP_DESC, 
+			STUDY_GROUP_OFFLINE, 
+			STUDY_GROUP_LNG, 
+			STUDY_GROUP_LAT,
+			STUDY_GROUP_AREA,
+			STUDY_GROUP_ADDR,
+			STUDY_GROUP_ADMIN
+		FROM STUDY_GROUP
+		WHERE STUDY_GROUP_ID = #{studygroupid}
+	</select>
+
+	<update id="updateStudy" parameterType="StudyDto">
+		UPDATE STUDY_GROUP
+		<set>
+			STUDY_GROUP_NAME = #{studygroupname}, 
+			STUDY_GROUP_DESC = #{studygroupdesc}
+			<if test='studygrouppw != null and studygrouppw != ""'>			
+				, STUDY_GROUP_PW = #{studygrouppw}
+			</if>
+		</set>
+		WHERE STUDY_GROUP_ID = #{studygroupid}
+	</update>
+</mapper>
+

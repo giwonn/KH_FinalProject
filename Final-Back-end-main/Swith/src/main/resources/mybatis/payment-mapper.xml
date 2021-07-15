@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="swith.paymentmapper">
+
+	<resultMap type="PaymentDto" id="paymentMap">
+		<result property="paymentid" column="PAYMENT_ID" />
+		<result property="memberemail" column="MEMBER_EMAIL" />
+		<result property="paymentprice" column="PAYMENT_PRICE" />
+		<result property="paymentdate" column="PAYMENT_DATE" />
+		<result property="paymentcontent" column="PAYMENT_CONTENT" />
+		<result property="paymentkinds" column="PAYMENT_KINDS" />
+	</resultMap>
+
+	<select id="selectList" resultMap="paymentMap" parameterType="int">
+		SELECT *
+		FROM PAYMENT
+		WHERE MEMBER_EMAIL = #{memberemail}
+	</select>
+	
+	<select id="selectListPeriod" resultMap="paymentMap" parameterType="PaymentDto">
+		
+		SELECT *
+		FROM PAYMENT
+		WHERE MEMBER_EMAIL = #{memberemail}
+		<if test="startdate != null and enddate != null">
+			<![CDATA[
+			AND PAYMENT_DATE >= #{startdate}
+			]]>
+		</if>
+		<if test="enddate != null">
+			<![CDATA[
+			AND PAYMENT_DATE <= #{enddate}
+			]]>
+		</if>
+	</select>
+	
+	<select id="selectOne" resultMap="paymentMap" parameterType="String">
+		SELECT *
+		FROM PAYMENT
+		WHERE PAYMENT_ID = #{paymentid}
+	</select>
+	
+	<insert id="insert" parameterType="PaymentDto">
+		INSERT INTO PAYMENT (
+			PAYMENT_ID, 
+			MEMBER_EMAIL, 
+			PAYMENT_PRICE, 
+			PAYMENT_DATE, 
+			PAYMENT_CONTENT,
+			PAYMENT_KINDS
+		)
+		VALUES (
+			#{paymentid},
+			#{memberemail},
+			#{paymentprice},
+			#{paymentdate},
+			#{paymentcontent},
+			#{paymentkinds}
+		)
+	</insert>
+	
+	<select id="premiumCheck" resultType="int" parameterType="String">
+		SELECT count(*)
+		FROM PAYMENT
+		WHERE
+		MEMBER_EMAIL = #{email}
+	</select>
+
+
+
+</mapper>
+

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swith.testmapper">
+
+	<resultMap type="testDto" id="testMap">
+		<result property="empno" column="EMPNO" />
+		<result property="ename" column="ENAME" />
+		<result property="job" column="JOB" />
+		<result property="mgr" column="MGR" />
+	</resultMap>
+
+	<select id="selectList" resultMap="testMap">
+		SELECT EMPNO, ENAME, JOB, MGR
+		FROM EMP
+		ORDER BY EMPNO DESC
+	</select>
+
+	<insert id="insert" parameterType="testDto">
+		INSERT INTO EMP (EMPNO, ENAME, JOB, MGR)
+		VALUES(9998, #{ename}, #{job}, #{mgr})
+	</insert>
+
+
+</mapper>
+
+
+
+
+
+
+

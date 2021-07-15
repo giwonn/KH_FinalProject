@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+
+<mapper namespace="swith.todolist-my-mapper">
+	<resultMap type="TodoMyDto" id="todoMyMap">
+		<result property="todomyid" column="TODO_MY_ID" />
+		<result property="title" column="TITLE" />
+		<result property="content" column="CONTENT" />
+		<result property="isdone" column="IS_DONE" />
+		<result property="memberemail" column="MEMBER_EMAIL" />
+		<result property="membernickname" column="MEMBER_NICKNAME" />
+		<result property="createdat" column="CREATEDAT" />
+		<result property="doneat" column="DONEAT" />
+	</resultMap>
+	
+	<insert id="insertTodo" parameterType="TodoMyDto">
+		<selectKey keyProperty="todomyid" resultType="integer" order="BEFORE">
+			 SELECT TO_DO_LIST_MY_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO TO_DO_LIST_MY
+			( 
+				TODO_MY_ID,
+				TITLE,
+				CONTENT,
+				IS_DONE,
+				MEMBER_EMAIL,
+				MEMBER_NICKNAME,
+				CREATEDAT
+			)
+		VALUES
+			(
+				#{todomyid},
+				#{title},
+				#{content},
+				0,
+				#{memberemail},
+				( 
+					SELECT MEMBER_NICKNAME FROM MEMBER 
+					WHERE MEMBER_EMAIL = #{memberemail} 
+				) ,
+				SYSDATE
+			)
+	</insert>
+	
+	<select id="selectTodos" parameterType="String" resultMap="todoMyMap">
+		SELECT 
+			
+				TODO_MY_ID,
+				TITLE,
+				CONTENT,
+				IS_DONE,
+				MEMBER_EMAIL,
+				MEMBER_NICKNAME,
+				CREATEDAT,
+				DONEAT
+		FROM TO_DO_LIST_MY
+		WHERE 
+			MEMBER_EMAIL = #{memberemail}
+			AND 
+			TO_CHAR(CREATEDAT,'yyyymmdd') = TO_CHAR(SYSDATE,'yyyymmdd') 
+		ORDER BY TODO_MY_ID 
+	</select>
+	
+	<delete id="deleteTodo" parameterType="int">
+		DELETE FROM TO_DO_LIST_MY
+		WHERE TODO_MY_ID = #{todomyid}
+	</delete>
+	
+	<update id="updateTodo" parameterType="TodoMyDto">
+		UPDATE TO_DO_LIST_MY
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="title != null and title != '' ">TITLE = #{title},</if>
+			<if test="content != null and content !='' ">CONTENT = #{content},</if>
+		</trim>
+		WHERE TODO_MY_ID = #{todomyid}
+	</update>
+	
+	<update id="toggleTodo" parameterType="int">
+		UPDATE TO_DO_LIST_MY 
+		SET IS_DONE = CASE
+			WHEN IS_DONE = 0 THEN 1
+			WHEN IS_DONE = 1 THEN 0
+			ELSE 0
+			END
+		WHERE TODO_MY_ID = #{todomyid}
+	</update>
+</mapper>
+

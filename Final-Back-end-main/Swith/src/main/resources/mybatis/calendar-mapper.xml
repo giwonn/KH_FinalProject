@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swith.calendarmapper">
+
+	<resultMap type="CalendarDto" id="calendarMap">
+		<result property="calendar_id" column="CALENDAR_ID" />
+		<result property="member_email" column="MEMBER_EMAIL" />
+		<result property="study_group_id" column="STUDY_GROUP_ID" />
+		<result property="title" column="TITLE" />
+		<result property="start" column="START_DATE" />
+		<result property="end" column="END_DATE" />
+		<result property="content" column="CONTENT" />
+		<result property="regdate" column="REGDATE" />
+	</resultMap>
+
+	<select id="selectList" resultMap="calendarMap">
+		SELECT CALENDAR_ID, MEMBER_EMAIL, STUDY_GROUP_ID, TITLE, START_DATE, END_DATE, CONTENT, REGDATE
+		FROM CALENDAR
+		ORDER BY CALENDAR_ID DESC
+	</select>
+	
+	<select id="selectMember" parameterType="String" resultMap="calendarMap">
+		SELECT CALENDAR_ID, MEMBER_EMAIL, STUDY_GROUP_ID, TITLE, START_DATE, END_DATE, CONTENT, REGDATE
+		FROM CALENDAR
+		WHERE MEMBER_EMAIL = #{member_email}
+		ORDER BY CALENDAR_ID DESC
+	</select>
+	
+	<select id="selectStudy" parameterType="int" resultMap="calendarMap">
+		SELECT CALENDAR_ID, MEMBER_EMAIL, STUDY_GROUP_ID, TITLE, START_DATE, END_DATE, CONTENT, REGDATE
+		FROM CALENDAR
+		WHERE STUDY_GROUP_ID = #{study_group_id}
+		ORDER BY CALENDAR_ID DESC
+	</select>
+
+	<insert id="insert" parameterType="calendarDto">
+		INSERT INTO CALENDAR
+		VALUES(CALENDARSEQ.NEXTVAL, #{member_email}, #{study_group_id}, #{title}, #{start}, #{end}, #{content}, SYSDATE)
+	</insert>
+	
+	<update id="update" parameterType="calendarDto">
+		UPDATE CALENDAR
+		<set> 
+			CALENDAR_ID = #{calendar_id},
+			<if test='title != null and content != ""'>TITLE = #{title},</if>
+			<if test='content != null and content != ""'>CONTENT = #{content},</if>
+			<if test='start != null and content != ""'>START_DATE = #{start},</if>
+			<if test='end != null and content != ""'>END_DATE = #{end}</if>
+		</set>
+		WHERE CALENDAR_ID = #{calendar_id}
+	</update>
+	
+	<delete id="delete" parameterType="calendarDto">
+		DELETE FROM CALENDAR
+		WHERE CALENDAR_ID = #{calendar_id}
+	</delete>
+
+</mapper>

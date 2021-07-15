@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+
+<mapper namespace="swith.studymapper">
+
+	<resultMap type="StudyDto" id="studyMap">
+		<result property="studygroupid" column="STUDY_GROUP_ID" />
+		<result property="studygroupname" column="STUDY_GROUP_NAME" />
+		<result property="studygroupdesc" column="STUDY_GROUP_DESC" />
+		<result property="studygroupoffline" column="STUDY_GROUP_OFFLINE" />
+		<result property="studygrouparea" column="STUDY_GROUP_AREA" />
+		<result property="studygrouplng" column="STUDY_GROUP_LNG" />
+		<result property="studygrouplat" column="STUDY_GROUP_LAT" />
+		<result property="studygroupaddr" column="STUDY_GROUP_ADDR" />
+		<result property="studygrouppw" column="STUDY_GROUP_PW" />
+		<result property="studyusercnt" column="STUDY_USERCNT" />
+	</resultMap>
+
+	<insert id="insert" parameterType="StudyDto">
+		INSERT INTO STUDY_GROUP (
+			STUDY_GROUP_ID, 
+			STUDY_GROUP_NAME, 
+			STUDY_GROUP_DESC, 
+			STUDY_GROUP_OFFLINE,
+			STUDY_GROUP_AREA
+			<if test='studygrouplng != null and studygrouplng != "" and studygroupaddr != null and studygroupaddr != "" and studygrouplat != null and studygrouplat != "" '>
+				,STUDY_GROUP_LNG, STUDY_GROUP_LAT, STUDY_GROUP_ADDR
+			</if>
+			<if test='studygrouppw != null and studygrouppw != ""'>			
+				,STUDY_GROUP_PW
+			</if>
+		)
+		VALUES (
+			STUDY_GROUP_SEQ.NEXTVAL, 
+			#{studygroupname}, 
+			#{studygroupdesc}, 
+			#{studygroupoffline},
+			#{studygrouparea}
+			<if test='studygrouplng != null and studygrouplng != "" and studygroupaddr != null and studygroupaddr != "" and studygrouplat != null and studygrouplat != "" '>
+				,#{studygrouplng}
+				,#{studygrouplat}
+				,#{studygroupaddr}
+			</if>
+			<if test='studygrouppw != null and studygrouppw != ""'>			
+				,#{studygrouppw}
+			</if>
+		)
+	</insert>
+	<select id="selectList" resultMap="studyMap">
+		SELECT 
+			STUDY_GROUP_ID, 
+			STUDY_GROUP_NAME, 
+			STUDY_GROUP_DESC, 
+			STUDY_GROUP_OFFLINE, 
+			STUDY_GROUP_LNG, 
+			STUDY_GROUP_LAT,
+			STUDY_GROUP_ADDR,
+			STUDY_GROUP_PW
+		FROM STUDY_GROUP
+		ORDER BY STUDY_GROUP_ID DESC
+	</select>
+
+
+
+</mapper>
+
